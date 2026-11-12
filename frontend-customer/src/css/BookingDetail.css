@@ -1,0 +1,901 @@
+.booking-detail-page {
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+    background: #f7f8fa;
+    color: #25364c;
+  }
+  
+  .booking-detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .booking-detail-back-link {
+    color: #53647b;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  
+  .booking-detail-back-link:hover {
+    color: #a17a3e;
+  }
+  
+  .booking-detail-heading {
+    margin: 30px 0 24px;
+  }
+  
+  .booking-detail-heading p {
+    margin: 0 0 8px;
+    color: #a17a3e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  
+  .booking-detail-heading h1 {
+    margin: 0 0 8px;
+    color: #20334c;
+    font-size: 30px;
+  }
+  
+  .booking-detail-heading > span {
+    color: #7d8999;
+    font-size: 14px;
+  }
+  
+  .booking-detail-card {
+    padding: 28px;
+    border: 1px solid #e7ebf0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 4px 18px rgb(30 47 70 / 4%);
+  }
+  
+  .booking-detail-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  
+  .booking-detail-label {
+    color: #8792a1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+  }
+  
+  .booking-detail-top h2 {
+    margin: 8px 0 0;
+    color: #263c57;
+    font-size: 22px;
+  }
+  
+  .booking-detail-status {
+    padding: 8px 13px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .booking-detail-status.pending {
+    color: #946316;
+    background: #fff3d7;
+  }
+  
+  .booking-detail-status.confirmed {
+    color: #2362a8;
+    background: #e7f1ff;
+  }
+  
+  .booking-detail-status.checked-in {
+    color: #087f72;
+    background: #ddf7f1;
+  }
+  
+  .booking-detail-status.completed {
+    color: #287548;
+    background: #e2f5e8;
+  }
+  
+  .booking-detail-status.canceled {
+    color: #a43e3e;
+    background: #fde8e8;
+  }
+  
+  .booking-detail-status.unknown {
+    color: #5e6672;
+    background: #edf0f3;
+  }
+  
+  .booking-detail-separator {
+    height: 1px;
+    margin: 24px 0;
+    background: #edf0f4;
+  }
+  
+  .booking-detail-date-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  
+  .booking-detail-date-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 17px;
+    border-radius: 10px;
+    background: #f7f8fa;
+  }
+  
+  .booking-detail-date-box span {
+    color: #8290a1;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+  
+  .booking-detail-date-box strong {
+    color: #2b405a;
+    font-size: 15px;
+  }
+  
+  .booking-detail-section {
+    margin-top: 30px;
+  }
+  
+  .booking-detail-section h3 {
+    margin: 0 0 16px;
+    color: #2a3c53;
+    font-size: 16px;
+  }
+  
+  .booking-detail-room-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .booking-detail-room {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #edf0f4;
+    border-radius: 9px;
+  }
+  
+  .booking-detail-room > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .booking-detail-room > div strong {
+    color: #34475e;
+    font-size: 14px;
+  }
+  
+  .booking-detail-room > div span {
+    color: #8792a1;
+    font-size: 12px;
+  }
+  
+  .booking-detail-room > strong {
+    color: #33465d;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .booking-detail-muted {
+    color: #8792a1;
+    font-size: 13px;
+  }
+  
+  .booking-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 15px;
+    color: #758296;
+    font-size: 14px;
+  }
+  
+  .booking-price-row strong {
+    color: #34465c;
+    font-weight: 600;
+  }
+  
+  .booking-price-total {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f4;
+    color: #283d57;
+    font-weight: 700;
+  }
+  
+  .booking-price-total strong {
+    color: #a17a3e;
+    font-size: 22px;
+  }
+  
+  .booking-detail-note {
+    margin: 0;
+    padding: 14px;
+    border-radius: 8px;
+    background: #f7f8fa;
+    color: #68778b;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  
+  .booking-detail-created {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #edf0f4;
+    color: #8993a2;
+    font-size: 12px;
+  }
+  
+  .booking-detail-state {
+    display: flex;
+    min-height: 70vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    color: #718096;
+    text-align: center;
+  }
+  
+  .booking-detail-state h2 {
+    margin: 0;
+    color: #293d55;
+    font-size: 22px;
+  }
+  
+  .booking-detail-state p {
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .booking-detail-back {
+    margin-top: 6px;
+    color: #a17a3e;
+    text-decoration: none;
+  }
+  
+  .booking-detail-spinner {
+    width: 34px;
+    height: 34px;
+    border: 3px solid #e5e9ef;
+    border-top-color: #a17a3e;
+    border-radius: 50%;
+    animation: booking-detail-spin 0.8s linear infinite;
+  }
+  
+  @keyframes booking-detail-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .booking-detail-page {
+      padding: 28px 14px 40px;
+    }
+  
+    .booking-detail-heading h1 {
+      font-size: 25px;
+    }
+  
+    .booking-detail-card {
+      padding: 20px 16px;
+    }
+  
+    .booking-detail-top {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  
+    .booking-detail-date-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .booking-detail-room {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  
+    .booking-price-total strong {
+      font-size: 19px;
+    }
+  }
+/* Thông tin khách hàng */
+.booking-customer-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.booking-customer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.booking-customer-field span,
+.booking-detail-room-info span {
+  color: #777;
+  font-size: 13px;
+}
+
+.booking-customer-field strong {
+  overflow-wrap: anywhere;
+}
+
+/* Số lượng phòng */
+.booking-room-count {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f3f5;
+  color: #444;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Thẻ chi tiết từng phòng */
+.booking-detail-room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.booking-detail-room-card {
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.booking-detail-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.booking-detail-room-header h4 {
+  margin: 6px 0;
+  font-size: 19px;
+}
+
+.booking-room-type {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.booking-detail-room-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 12px;
+  padding: 16px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.booking-detail-room-info > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.booking-detail-room-info strong {
+  overflow-wrap: anywhere;
+}
+
+.booking-detail-room-description {
+  margin: 14px 0 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.booking-detail-room-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.booking-detail-room-price span {
+  color: #555;
+  font-size: 14px;
+}
+
+.booking-detail-room-price strong {
+  color: #9b7434;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+/* Trạng thái phòng */
+.booking-room-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.booking-room-status.vacant {
+  background: #e8f7ed;
+  color: #237a42;
+}
+
+.booking-room-status.occupied {
+  background: #fff0e6;
+  color: #a64b0a;
+}
+
+.booking-room-status.cleaning {
+  background: #fff7d6;
+  color: #8a6d00;
+}
+
+.booking-room-status.maintenance {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+@media (max-width: 600px) {
+  .booking-customer-info {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-detail-room-header {
+    flex-direction: column;
+  }
+
+  .booking-detail-room-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-detail-room-price {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+.booking-cancel-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  
+  .booking-cancel-button {
+    padding: 11px 20px;
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    background: #fff;
+    color: #dc3545;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .booking-cancel-button:hover:not(:disabled) {
+    background: #dc3545;
+    color: #fff;
+  }
+  
+  .booking-cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .booking-cancel-success {
+    margin-top: 16px;
+    color: #198754;
+  }
+  
+  .booking-cancel-error {
+    margin-top: 16px;
+    color: #dc3545;
+  }
+  
+/* Nút hủy đặt phòng */
+.booking-cancel-button {
+    padding: 11px 22px;
+    border: none;
+    border-radius: 9px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  
+  .booking-cancel-button:hover {
+    background: #bb2d3b;
+    transform: translateY(-1px);
+  }
+  
+  .booking-cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* Lớp phủ modal */
+  .booking-cancel-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(20, 30, 48, 0.58);
+    backdrop-filter: blur(4px);
+    animation: cancelFadeIn 0.2s ease;
+  }
+  
+  /* Khung modal */
+  .booking-cancel-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    padding: 34px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: cancelSlideIn 0.25s ease;
+  }
+  
+  .booking-cancel-close {
+    position: absolute;
+    top: 14px;
+    right: 17px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  
+  .booking-cancel-close:hover {
+    background: #e5e7eb;
+    color: #111827;
+  }
+  
+  .booking-cancel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 66px;
+    margin: 0 auto 20px;
+    border: 7px solid #fff0f0;
+    border-radius: 50%;
+    background: #fde2e2;
+    color: #dc3545;
+    font-size: 34px;
+    font-weight: 700;
+  }
+  
+  .booking-cancel-dialog h2 {
+    margin: 0 0 12px;
+    color: #202b3c;
+    font-size: 23px;
+    font-weight: 700;
+  }
+  
+  .booking-cancel-subtitle {
+    margin: 0 0 22px;
+    color: #697586;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  
+  .booking-cancel-booking-code {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border: 1px solid #e9edf3;
+    border-radius: 11px;
+    background: #f8fafc;
+    text-align: left;
+  }
+  
+  .booking-cancel-booking-code span {
+    color: #6b7280;
+    font-size: 13px;
+  }
+  
+  .booking-cancel-booking-code strong {
+    color: #243247;
+    font-size: 14px;
+  }
+  
+  .booking-cancel-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 14px;
+    border: 1px solid #ffe4c7;
+    border-radius: 11px;
+    background: #fff8ef;
+    text-align: left;
+  }
+  
+  .booking-cancel-notice-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffead2;
+    color: #a85b00;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  
+  .booking-cancel-notice p {
+    margin: 0;
+    color: #80551e;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  
+  .booking-cancel-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+  }
+  
+  .booking-cancel-modal-actions button {
+    flex: 1;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .booking-cancel-back {
+    border: 1px solid #d9dee7;
+    background: #fff;
+    color: #374151;
+  }
+  
+  .booking-cancel-back:hover {
+    background: #f3f4f6;
+  }
+  
+  .booking-cancel-confirm {
+    border: 1px solid #dc3545;
+    background: #dc3545;
+    color: #fff;
+  }
+  
+  .booking-cancel-confirm:hover {
+    border-color: #bb2d3b;
+    background: #bb2d3b;
+  }
+  
+  .booking-cancel-modal-actions button:disabled,
+  .booking-cancel-close:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  @keyframes cancelFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes cancelSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .booking-cancel-dialog {
+      padding: 28px 20px 22px;
+      border-radius: 16px;
+    }
+  
+    .booking-cancel-dialog h2 {
+      font-size: 20px;
+    }
+  
+    .booking-cancel-modal-actions {
+      flex-direction: column-reverse;
+    }
+  
+    .booking-cancel-modal-actions button {
+      width: 100%;
+    }
+  }
+/* ===== CHI TIẾT CHI PHÍ ===== */
+
+.booking-price-breakdown {
+  margin-top: 18px;
+  padding: 22px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.booking-price-breakdown .booking-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.booking-price-breakdown .booking-price-row > strong {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+}
+
+.booking-discount-code-row {
+  align-items: center;
+}
+
+.booking-discount-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 11px;
+  border: 1px dashed #16a34a;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.booking-discount-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 13px;
+}
+
+.booking-price-breakdown .booking-discount-row > strong {
+  color: #16a34a;
+}
+
+.booking-price-breakdown .booking-price-total {
+  margin-top: 8px;
+  padding: 17px 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.booking-price-breakdown .booking-price-total > span {
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.booking-price-breakdown .booking-price-total > strong {
+  color: #0f766e;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.booking-payment-divider {
+  height: 1px;
+  margin: 8px 0;
+  background: #e2e8f0;
+}
+
+.booking-price-breakdown .booking-price-row > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.booking-payment-dot {
+  display: inline-block;
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.deposit-dot {
+  background: #2563eb;
+}
+
+.remaining-dot {
+  background: #f59e0b;
+}
+
+.booking-price-breakdown .booking-price-remaining {
+  margin-top: 4px;
+  padding: 15px;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.booking-price-breakdown .booking-price-remaining > strong {
+  color: #c2410c;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.booking-detail-payment-note {
+  margin-top: 14px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 576px) {
+  .booking-price-breakdown {
+    padding: 15px;
+  }
+
+  .booking-price-breakdown .booking-price-row {
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .booking-price-breakdown .booking-price-total > strong {
+    font-size: 17px;
+  }
+
+  .booking-price-breakdown .booking-price-remaining > strong {
+    font-size: 14px;
+  }
+}

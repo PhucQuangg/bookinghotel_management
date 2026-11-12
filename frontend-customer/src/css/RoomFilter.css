@@ -1,0 +1,137 @@
+/* Bộ lọc phòng trên trang chủ GrandStay */
+.room-filter-panel {
+    margin: 28px 0 30px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e9e3d8;
+    border-radius: 16px;
+    box-shadow: 0 8px 28px rgba(35, 30, 20, 0.06);
+}
+
+.room-filter-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.room-filter-heading h3 {
+    margin: 0 0 6px;
+    color: #25352c;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.room-filter-heading p {
+    margin: 0;
+    color: #777b75;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.room-filter-clear {
+    flex-shrink: 0;
+    border: 1px solid #c9b48b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #fff;
+    color: #6c5732;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.room-filter-clear:hover {
+    background: #b69a68;
+    color: #fff;
+}
+
+.room-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.room-filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.room-filter-item label {
+    color: #3e473f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.room-filter-item input,
+.room-filter-item select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #deded7;
+    border-radius: 8px;
+    padding: 10px 12px;
+    outline: none;
+    background: #fff;
+    color: #343a35;
+    font: inherit;
+    font-size: 14px;
+}
+
+.room-filter-item input:focus,
+.room-filter-item select:focus {
+    border-color: #b69a68;
+    box-shadow: 0 0 0 3px rgba(182, 154, 104, 0.14);
+}
+
+.room-filter-result {
+    margin: 18px 0 0;
+    color: #6f746e;
+    font-size: 14px;
+}
+
+.room-filter-result strong {
+    color: #28392e;
+}
+
+.room-filter-empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 28px 18px;
+    border: 1px dashed #d8d2c5;
+    border-radius: 12px;
+    color: #777b75;
+    text-align: center;
+    line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+    .room-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .room-filter-panel {
+        margin: 20px 0 24px;
+        padding: 16px;
+    }
+
+    .room-filter-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .room-filter-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .room-filter-clear {
+        width: 100%;
+    }
+}
