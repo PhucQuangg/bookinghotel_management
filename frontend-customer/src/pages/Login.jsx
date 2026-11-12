@@ -86,16 +86,15 @@ export default function Login() {
         
                 window.location.href = "http://localhost:3000";
               } else {
-                sessionStorage.setItem("admin_token", data.token);
-        
-                sessionStorage.setItem("admin_username", form.username.trim());
-
-                sessionStorage.setItem("role", role);
-
         
                 window.location.href = `http://localhost:3001/admin/?token=${
                   data.token
                 }&userName=${encodeURIComponent(form.username.trim())}&role=${data.role}`;
+
+                sessionStorage.removeItem("token", token);
+                sessionStorage.removeItem("role", role);
+                sessionStorage.removeItem("username", form.username.trim());
+    
               }
         } catch (err) {
             setError(

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const menuItems = [
     { label: "Tổng quan", icon: "bi-grid-1x2-fill", path: "/admin" },
@@ -16,13 +16,12 @@ const menuItems = [
 ];
 
 function AdminSidebar({ open, onClose }) {
-    const navigate = useNavigate();
 
     const handleLogout = () => {
-        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("admin_token");
         sessionStorage.removeItem("role");
-        sessionStorage.removeItem("username");
-        navigate("localhost:30000/login");
+        sessionStorage.removeItem("admin_username");
+        window.location.href = "http://localhost:3000/login";
     };
 
     return (

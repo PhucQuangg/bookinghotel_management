@@ -1,6 +1,8 @@
 package com.stu.edu.bookinghotel_management.Controller.admin;
 
+import com.stu.edu.bookinghotel_management.dto.AddBookingRoomRequest;
 import com.stu.edu.bookinghotel_management.dto.AvailableRoomDTO;
+import com.stu.edu.bookinghotel_management.dto.BookingDetailDTO;
 import com.stu.edu.bookinghotel_management.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/rooms")
 @RequiredArgsConstructor
 public class AdminRoomController {
 
@@ -40,6 +42,52 @@ public class AdminRoomController {
                         checkInDate,
                         checkOutDate,
                         guestCount
+                )
+        );
+    }
+    /**
+     * Admin thêm phòng vào Booking hiện có.
+     */
+    @PostMapping("/{id}/rooms")
+    public ResponseEntity<BookingDetailDTO> addRoomToBooking(
+            @PathVariable Long id,
+            @RequestBody AddBookingRoomRequest request
+    ) {
+        return ResponseEntity.ok(
+                bookingService.addRoomToBooking(id, request)
+        );
+    }
+
+    /**
+     * Admin cập nhật phòng trong Booking.
+     */
+    @PutMapping("/{bookingId}/rooms/{bookingRoomId}")
+    public ResponseEntity<BookingDetailDTO> updateRoomInBooking(
+            @PathVariable Long bookingId,
+            @PathVariable Long bookingRoomId,
+            @RequestBody AddBookingRoomRequest request
+    ) {
+        return ResponseEntity.ok(
+                bookingService.updateRoomInBooking(
+                        bookingId,
+                        bookingRoomId,
+                        request
+                )
+        );
+    }
+
+    /**
+     * Admin xóa phòng khỏi Booking.
+     */
+    @DeleteMapping("/{bookingId}/rooms/{bookingRoomId}")
+    public ResponseEntity<BookingDetailDTO> deleteRoomFromBooking(
+            @PathVariable Long bookingId,
+            @PathVariable Long bookingRoomId
+    ) {
+        return ResponseEntity.ok(
+                bookingService.deleteRoomFromBooking(
+                        bookingId,
+                        bookingRoomId
                 )
         );
     }

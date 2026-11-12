@@ -4,17 +4,6 @@ import "../css/PaymentResult.css";
 
 const API_URL = "http://localhost:8080/api";
 
-const formatPrice = (price) =>
-    new Intl.NumberFormat("vi-VN").format(Number(price) || 0) + "đ";
-
-const formatDate = (date) => {
-    if (!date) return "Chưa cập nhật";
-
-    const value = String(date).split("T")[0];
-    const [year, month, day] = value.split("-");
-
-    return `${day}/${month}/${year}`;
-};
 
 function PaymentResult() {
     const navigate = useNavigate();

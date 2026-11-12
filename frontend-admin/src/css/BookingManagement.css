@@ -2933,3 +2933,440 @@
 }
 
 
+
+/* ================= SIMPLE BOOKING BILL ================= */
+
+.booking-bill {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    color: #263b31;
+    margin: 0;
+    padding: 0 10px;
+}
+
+.booking-bill *,
+.booking-bill *::before,
+.booking-bill *::after {
+    box-sizing: border-box;
+}
+
+/* HEADER */
+
+.booking-bill-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.booking-bill-heading h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: #183b32;
+}
+
+.booking-bill-heading p {
+    margin: 4px 0;
+    color: #78857e;
+    font-size: 13px;
+}
+
+.booking-bill-heading p strong {
+    color: #263b31;
+}
+
+.booking-bill-print-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 7px;
+    background: #183b32;
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* LAYOUT 2 BẢNG */
+
+.booking-bill-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+}
+
+/* TIÊU ĐỀ 2 BẢNG */
+
+.booking-bill-section,
+.booking-bill-summary {
+    min-width: 0;
+    margin: 0;
+}
+
+.booking-bill-section h4,
+.booking-bill-summary h4 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: #183b32;
+    min-height: 20px;
+}
+
+/* BẢNG CHI TIẾT */
+
+.booking-bill-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border: 1px solid #e8eeea;
+    border-radius: 8px;
+}
+
+.booking-bill-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    min-width: 0;
+    font-size: 12px;
+}
+
+.booking-bill-table th {
+    padding: 10px 7px;
+    background: #f4f7f5;
+    color: #596b61;
+    text-align: left;
+    overflow-wrap: break-word;
+}
+
+.booking-bill-table td {
+    padding: 11px 7px;
+    border-top: 1px solid #edf1ee;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.booking-bill-table small {
+    display: block;
+    margin-top: 4px;
+    color: #89958e;
+    font-size: 11px;
+}
+
+/* BẢNG TỔNG THANH TOÁN */
+
+.booking-bill-total-box {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 15px;
+    border: 1px solid #e5ece7;
+    border-radius: 9px;
+    background: #fafcfb;
+}
+
+.booking-bill-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf1ee;
+    font-size: 12px;
+}
+
+.booking-bill-total-row span {
+    color: #718078;
+    flex: 1;
+}
+
+.booking-bill-total-row strong {
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.booking-bill-total-row.final {
+    padding: 14px 0;
+    color: #183b32;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.booking-bill-total-row.final strong {
+    font-size: 16px;
+}
+
+.booking-bill-total-row.paid strong {
+    color: #188451;
+}
+
+.booking-bill-total-row.remaining {
+    border-bottom: none;
+}
+
+.booking-bill-total-row.remaining strong {
+    color: #d18a2d;
+    font-size: 15px;
+}
+
+.booking-bill-payment-status {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 13px;
+    border-top: 1px solid #dfe8e2;
+    font-size: 12px;
+}
+
+.booking-bill-payment-status .is-paid {
+    color: #188451;
+}
+
+.booking-bill-payment-status .is-unpaid {
+    color: #d18a2d;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .booking-bill-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-bill-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .booking-bill-table {
+        table-layout: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .booking-bill {
+        padding: 0 5px;
+    }
+
+    .booking-bill-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .booking-bill-total-box {
+        padding: 12px;
+    }
+}
+
+/* IN HÓA ĐƠN */
+
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    .booking-bill,
+    .booking-bill * {
+        visibility: visible !important;
+    }
+
+    .booking-bill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        background: white;
+    }
+
+    .booking-bill-print-btn {
+        display: none !important;
+    }
+
+    .booking-bill-layout {
+        grid-template-columns: 1.5fr 1fr;
+    }
+}
+
+/* Mặc định không hiển thị trong tab Bill */
+.booking-invoice-print {
+    display: none;
+}
+
+/* Chỉ áp dụng khi in */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 15mm;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .booking-invoice-print,
+    .booking-invoice-print * {
+        visibility: visible !important;
+    }
+
+    .booking-invoice-print {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+        background: white;
+        color: #222;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+    }
+
+    .invoice-header {
+        text-align: center;
+        padding-bottom: 18px;
+        border-bottom: 2px solid #183b32;
+    }
+
+    .invoice-header h1 {
+        margin: 0;
+        color: #183b32;
+        font-size: 30px;
+        letter-spacing: 4px;
+    }
+
+    .invoice-header p {
+        margin: 4px 0 20px;
+        color: #777;
+        letter-spacing: 4px;
+        font-size: 11px;
+    }
+
+    .invoice-header h2 {
+        margin: 0;
+        font-size: 21px;
+        color: #183b32;
+    }
+
+    .invoice-header span {
+        display: block;
+        margin-top: 5px;
+        color: #888;
+        letter-spacing: 2px;
+        font-size: 10px;
+    }
+
+    .invoice-booking-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 25px;
+        margin: 25px 0;
+    }
+
+    .invoice-booking-info div {
+        display: flex;
+        gap: 6px;
+    }
+
+    .invoice-booking-info span {
+        color: #777;
+    }
+
+    .invoice-section-title {
+        margin: 25px 0 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #183b32;
+        color: #183b32;
+        font-size: 13px;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+    }
+
+    .invoice-table th {
+        padding: 10px 6px;
+        background: #eaf0ec !important;
+        color: #183b32;
+        border: 1px solid #ddd;
+        text-align: left;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .invoice-table td {
+        padding: 10px 6px;
+        border: 1px solid #ddd;
+    }
+
+    .invoice-payment-summary {
+        width: 65%;
+        margin: 25px 0 0 auto;
+    }
+
+    .invoice-payment-summary div {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 9px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .invoice-payment-summary .invoice-final {
+        margin-top: 5px;
+        padding: 13px 0;
+        border-top: 1px solid #183b32;
+        color: #183b32;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .invoice-payment-summary .invoice-remaining {
+        color: #c47b20;
+    }
+
+    .invoice-signatures {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 65px;
+        text-align: center;
+    }
+
+    .invoice-signatures strong {
+        font-size: 11px;
+    }
+
+    .invoice-signatures p {
+        margin-top: 6px;
+        color: #888;
+        font-style: italic;
+        font-size: 10px;
+    }
+
+    .invoice-thank-you {
+        margin-top: 55px;
+        padding-top: 15px;
+        border-top: 1px dashed #aaa;
+        text-align: center;
+    }
+
+    .invoice-thank-you strong {
+        color: #183b32;
+        font-size: 12px;
+    }
+
+    .invoice-thank-you p {
+        margin-top: 6px;
+        color: #777;
+        font-style: italic;
+    }
+
+    .invoice-table tr,
+    .invoice-payment-summary {
+        break-inside: avoid;
+    }
+}

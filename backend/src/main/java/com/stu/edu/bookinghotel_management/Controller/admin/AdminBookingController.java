@@ -52,18 +52,7 @@ public class AdminBookingController {
                 bookingService.getAdminBookingDetail(id)
         );
     }
-    /**
-     * Admin thêm phòng vào Booking hiện có.
-     */
-    @PostMapping("/{id}/rooms")
-    public ResponseEntity<BookingDetailDTO> addRoomToBooking(
-            @PathVariable Long id,
-            @RequestBody AddBookingRoomRequest request
-    ) {
-        return ResponseEntity.ok(
-                bookingService.addRoomToBooking(id, request)
-        );
-    }
+
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<Booking> updateBookingStatus(
@@ -111,39 +100,6 @@ public class AdminBookingController {
         );
     }
 
-    /**
-     * Admin cập nhật phòng trong Booking.
-     */
-    @PutMapping("/{bookingId}/rooms/{bookingRoomId}")
-    public ResponseEntity<BookingDetailDTO> updateRoomInBooking(
-            @PathVariable Long bookingId,
-            @PathVariable Long bookingRoomId,
-            @RequestBody AddBookingRoomRequest request
-    ) {
-        return ResponseEntity.ok(
-                bookingService.updateRoomInBooking(
-                        bookingId,
-                        bookingRoomId,
-                        request
-                )
-        );
-    }
-
-    /**
-     * Admin xóa phòng khỏi Booking.
-     */
-    @DeleteMapping("/{bookingId}/rooms/{bookingRoomId}")
-    public ResponseEntity<BookingDetailDTO> deleteRoomFromBooking(
-            @PathVariable Long bookingId,
-            @PathVariable Long bookingRoomId
-    ) {
-        return ResponseEntity.ok(
-                bookingService.deleteRoomFromBooking(
-                        bookingId,
-                        bookingRoomId
-                )
-        );
-    }
 
     @PutMapping("/{id}/note")
     public ResponseEntity<BookingDetailDTO> updateBookingNote(

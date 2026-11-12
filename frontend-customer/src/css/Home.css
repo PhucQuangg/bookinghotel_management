@@ -762,7 +762,7 @@
 .home-about-content h2 {
     color: var(--primary);
 
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Times New Roman";
 
     font-size: 40px;
 
@@ -825,7 +825,7 @@
 }
 
 .home-cta h2 {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Times New Roman";
 
     font-size: 38px;
 

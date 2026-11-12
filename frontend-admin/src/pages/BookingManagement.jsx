@@ -3,6 +3,8 @@ import "../css/BookingManagement.css";
 import { useAdminPopup } from "../components/popup/AdminPopupContext";
 
 const API_URL = "http://localhost:8080/api/admin/bookings";
+const API_URL_ROOMS = "http://localhost:8080/api/admin/rooms";
+
 const PAGE_SIZE = 8;
 const formatCurrencyInput = (value) => {
   if (!value) return "";
@@ -385,7 +387,7 @@ function BookingManagement() {
         ? `${oldNote}\n${newNote}`
         : newNote;
       const response = await fetch(
-        `http://localhost:8080/api/admin/bookings/${selectedBooking.id}/note`,
+        `${API_URL}/${selectedBooking.id}/note`,
         {
           method: "PUT",
           headers: {
@@ -450,7 +452,7 @@ function BookingManagement() {
       setSavingNote(true);
 
       const response = await fetch(
-        `http://localhost:8080/api/admin/bookings/${selectedBooking.id}/note`,
+        `${API_URL}/${selectedBooking.id}/note`,
         {
           method: "PUT",
           headers: {
@@ -835,7 +837,7 @@ function BookingManagement() {
       }
 
       const response = await fetch(
-        "http://localhost:8080/api/admin/room-types",
+        `${API_URL_ROOMS}/room-types`,
         {
           method: "GET",
           headers: {
@@ -893,9 +895,9 @@ function BookingManagement() {
         checkOutDate: roomForm.checkOutDate,
         guestCount: String(roomForm.guestCount),
       });
-
+      
       const response = await fetch(
-        `http://localhost:8080/api/admin/${
+        `${API_URL_ROOMS}/${
           selectedBooking.id
         }/available-rooms?${params.toString()}`,
         {
@@ -1201,8 +1203,8 @@ function BookingManagement() {
       }
 
       const url = isEditing
-        ? `${API_URL}/${selectedBooking.id}/rooms/${bookingRoomId}`
-        : `${API_URL}/${selectedBooking.id}/rooms`;
+        ? `${API_URL_ROOMS}/${selectedBooking.id}/rooms/${bookingRoomId}`
+        : `${API_URL_ROOMS}/${selectedBooking.id}/rooms`;
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
         headers: {
@@ -1282,7 +1284,7 @@ function BookingManagement() {
       const token = getToken();
       if (!token) throw new Error("Phiên đăng nhập đã hết hạn.");
       const response = await fetch(
-        `${API_URL}/${selectedBooking.id}/rooms/${bookingRoomId}`,
+        `${API_URL_ROOMS}/${selectedBooking.id}/rooms/${bookingRoomId}`,
         {
           method: "DELETE",
           headers: {
@@ -1676,13 +1678,6 @@ function BookingManagement() {
     { id: "bill", label: "Bill", icon: "bi-receipt" },
   ];
 
-  const renderUnavailableTab = (title, description) => (
-    <div className="booking-tab-unavailable">
-      <i className="bi bi-info-circle"></i>
-      <h4>{title}</h4>
-      <p>{description}</p>
-    </div>
-  );
 
   const renderAddRoomModal = () => {
     if (!showAddRoomModal || !selectedBooking) return null;
@@ -3442,19 +3437,301 @@ function BookingManagement() {
 
             {/* ================= BILL ================= */}
 
-            {activeDetailTab === "bill" && (
-              <>
-                <div className="booking-tab-title">
-                  <h3>Hóa đơn</h3>
-                  <p>Thông tin hóa đơn của đơn đặt phòng.</p>
-                </div>
+            {activeDetailTab === "bill" &&
+              (() => {
+                const billRooms = Array.isArray(rooms) ? rooms : [];
+                const billExtraCosts = Array.isArray(extraCosts)
+                  ? extraCosts
+                  : [];
 
-                {renderUnavailableTab(
-                  "Chưa có dữ liệu hóa đơn",
-                  "Backend hiện chưa cung cấp thông tin hóa đơn hoặc API xuất/in bill."
-                )}
-              </>
-            )}
+
+                const finalAmount = Number(booking.finalAmount || 0);
+
+                const calculateNights = (checkIn, checkOut) => {
+                  if (!checkIn || !checkOut) return 0;
+
+                  return Math.max(
+                    0,
+                    Math.round(
+                      (new Date(`${checkOut}T00:00:00`) -
+                        new Date(`${checkIn}T00:00:00`)) /
+                        86400000
+                    )
+                  );
+                };
+
+                const extraCostTotal = billExtraCosts.reduce(
+                  (total, item) => total + Number(item.totalAmount || 0),
+                  0
+                );
+
+                return (
+                  <div className="booking-bill">
+                    <div className="booking-bill-heading">
+                      <div>
+                        <h3>Hóa đơn đặt phòng</h3>
+      
+                      </div>
+
+                      <button
+                        type="button"
+                        className="booking-bill-print-btn"
+                        onClick={() => window.print()}
+                      >
+                        <i className="bi bi-printer"></i>
+                        In hóa đơn
+                      </button>
+                    </div>
+                    <div className="booking-bill-layout">
+                      {/* CHI TIẾT PHÒNG */}
+                      <div className="booking-bill-section">
+                        <h4>Chi tiết dịch vụ</h4>
+
+                        <div className="booking-bill-table-wrapper">
+                          <table className="booking-bill-table">
+                            <thead>
+                              <tr>
+                                <th>Phòng</th>
+                                <th>Thời gian</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {billRooms.map((room, index) => {
+                                const checkIn =
+                                  room.checkInDate || booking.checkInDate;
+                                const checkOut =
+                                  room.checkOutDate || booking.checkOutDate;
+                                const nights = calculateNights(
+                                  checkIn,
+                                  checkOut
+                                );
+
+                                const unitPrice = Number(room.roomPrice || 0);
+                                const roomTotal = unitPrice * nights;
+                                const discount = Number(
+                                  room.discountAmount || 0
+                                );
+                                const total = Math.max(0, roomTotal - discount);
+
+                                return (
+                                  <tr
+                                    key={room.bookingRoomId || room.id || index}
+                                  >
+                                    <td>
+                                      <strong>
+                                        {room.roomTypeName || "Phòng"}{" "}
+                                        {room.roomNumber || ""}
+                                      </strong>
+                                    </td>
+
+                                    <td>
+                                      {formatDate(checkIn)} -{" "}
+                                      {formatDate(checkOut)}
+                                      <small>{nights} đêm</small>
+                                    </td>
+
+                                    <td>{formatMoney(unitPrice)}</td>
+
+                                    <td>
+                                      <strong>{formatMoney(total)}</strong>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+
+                              {billExtraCosts.map((item) => (
+                                <tr key={`extra-${item.id}`}>
+                                  <td>
+                                    <strong>{item.name}</strong>
+                                    <small>Chi phí phát sinh</small>
+                                  </td>
+                                  <td>{formatDate(item.incurredDate)}</td>
+                                  <td>{formatMoney(item.unitPrice)}</td>
+                                  <td>
+                                    <strong>
+                                      {formatMoney(item.totalAmount)}
+                                    </strong>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* TỔNG THANH TOÁN */}
+                      <div className="booking-bill-summary">
+                        <h4>Tổng kết thanh toán</h4>
+                        <div className="booking-bill-total-box">
+                          <div className="booking-bill-total-row">
+                            <span>Tổng tiền phòng và dịch vụ</span>
+                            <strong>
+                              {formatMoney(
+                                Number(booking.totalAmount || 0) +
+                                  extraCostTotal
+                              )}
+                            </strong>
+                          </div>
+
+                          <div className="booking-bill-total-row">
+                            <span>Giảm giá</span>
+                            <strong>
+                              - {formatMoney(booking.discountAmount || 0)}
+                            </strong>
+                          </div>
+
+                          <div className="booking-bill-total-row final">
+                            <span>Tổng thanh toán</span>
+                            <strong>{formatMoney(finalAmount)}</strong>
+                          </div>
+
+                          <div className="booking-bill-total-row paid">
+                            <span>Đã thanh toán</span>
+                            <strong>{formatMoney(booking.paidAmount)}</strong>
+                          </div>
+
+                          <div className="booking-bill-total-row remaining">
+                            <span>Còn cần trả</span>
+                            <strong>{formatMoney(booking.remainingAmount)}</strong>
+                          </div>
+
+                        
+                        </div>
+                      </div>
+                    </div>
+
+
+{/* LAYOUT RIÊNG DÀNH CHO IN HÓA ĐƠN */}
+<div className="booking-invoice-print">
+
+<div className="invoice-header">
+  <h1>GRANDSTAY</h1>
+  <p>HOTEL & RESORT</p>
+  <h2>HÓA ĐƠN THANH TOÁN</h2>
+  <span>BOOKING INVOICE</span>
+</div>
+
+<div className="invoice-booking-info">
+  <div>
+    <span>Mã đặt phòng:</span>
+    <strong>{booking.bookingCode || "--"}</strong>
+  </div>
+  <div>
+  <span>Khách hàng:</span>
+  <strong>{booking.customerName || "--"}</strong>
+</div>
+
+<div>
+  <span>Số điện thoại:</span>
+  <strong>{booking.customerPhone || "--"}</strong>
+</div>
+
+<div>
+  <span>Email:</span>
+  <strong>{booking.customerEmail || "--"}</strong>
+</div>
+  <div>
+    <span>Ngày nhận phòng:</span>
+    <strong>{formatDate(booking.checkInDate)}</strong>
+  </div>
+  <div>
+    <span>Ngày trả phòng:</span>
+    <strong>{formatDate(booking.checkOutDate)}</strong>
+  </div>
+</div>
+
+<h3 className="invoice-section-title">CHI TIẾT DỊCH VỤ</h3>
+
+<table className="invoice-table">
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Nội dung</th>
+      <th>Thời gian</th>
+      <th>Đơn giá</th>
+      <th>Thành tiền</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rooms.map((room, index) => {
+      const checkIn = room.checkInDate || booking.checkInDate;
+      const checkOut = room.checkOutDate || booking.checkOutDate;
+
+      const nights = Math.max(
+        0,
+        Math.round(
+          (new Date(`${checkOut}T00:00:00`) -
+            new Date(`${checkIn}T00:00:00`)) / 86400000
+        )
+      );
+
+      const total = Math.max(
+        0,
+        Number(room.roomPrice || 0) * nights -
+        Number(room.discountAmount || 0)
+      );
+
+      return (
+        <tr key={room.bookingRoomId || room.id || index}>
+          <td>{index + 1}</td>
+          <td>
+            {room.roomTypeName || "Phòng"} {room.roomNumber || ""}
+          </td>
+          <td>{nights} đêm</td>
+          <td>{formatMoney(room.roomPrice)}</td>
+          <td>{formatMoney(total)}</td>
+        </tr>
+      );
+    })}
+
+    {extraCosts.map((item, index) => (
+      <tr key={`invoice-extra-${item.id || index}`}>
+        <td>{rooms.length + index + 1}</td>
+        <td>{item.name || "Chi phí phát sinh"}</td>
+        <td>{formatDate(item.incurredDate)}</td>
+        <td>{formatMoney(item.unitPrice)}</td>
+        <td>{formatMoney(item.totalAmount)}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<div className="invoice-payment-summary">
+  <div>
+    <span>Tổng tiền:</span>
+    <strong>{formatMoney(booking.totalAmount)}</strong>
+  </div>
+  <div>
+    <span>Giảm giá:</span>
+    <strong>- {formatMoney(booking.discountAmount)}</strong>
+  </div>
+  <div className="invoice-final">
+    <span>TỔNG THANH TOÁN:</span>
+    <strong>{formatMoney(booking.finalAmount)}</strong>
+  </div>
+  <div>
+    <span>Đã thanh toán:</span>
+    <strong>{formatMoney(booking.paidAmount)}</strong>
+  </div>
+  <div className="invoice-remaining">
+    <span>Còn cần trả:</span>
+    <strong>{formatMoney(booking.remainingAmount)}</strong>
+  </div>
+</div>
+
+<div className="invoice-thank-you">
+  <strong>CẢM ƠN QUÝ KHÁCH ĐÃ LỰA CHỌN GRANDSTAY!</strong>
+  <p>Kính chúc Quý khách có một kỳ nghỉ tuyệt vời.</p>
+</div>
+
+</div>
+
+                  </div>
+                );
+              })()}
           </div>
 
           {/* FOOTER */}
