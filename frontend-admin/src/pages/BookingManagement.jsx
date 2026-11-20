@@ -57,6 +57,11 @@ const getSourceLabel = (source) => {
 };
 
 function BookingManagement() {
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [selectedCancelBooking, setSelectedCancelBooking] = useState(null);
+
   const [noteContent, setNoteContent] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
@@ -756,72 +761,109 @@ function BookingManagement() {
 
   // ================= EXECUTE STATUS UPDATE =================
 
-  const executeStatusUpdate = async (booking, newStatus) => {
+  
+  const executeStatusUpdate = async (
+    booking,
+    newStatus,
+    cancellationReason = ""
+) => {
     try {
-      setUpdatingStatus(true);
+        setUpdatingStatus(true);
 
-      const token = getToken();
+        const token = getToken();
 
-      if (!token) {
-        throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-      }
-
-      const response = await fetch(
-        `${API_URL}/${booking.id}/status?status=${encodeURIComponent(
-          newStatus
-        )}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+        if (!token) {
+            throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
         }
-      );
 
-      if (!response.ok) {
-        const result = await response.json().catch(() => ({}));
+        const params = new URLSearchParams();
+        params.append("status", newStatus);
 
-        throw new Error(
-          result.message || "Không thể cập nhật trạng thái booking."
+        if (newStatus === "CANCELED") {
+            params.append("cancellationReason", cancellationReason);
+        }
+
+        const response = await fetch(
+            `${API_URL}/${booking.id}/status?${params.toString()}`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
         );
-      }
 
-      await fetchBookings({
-        keyword,
-        status: filters.status,
-        checkInDate: filters.checkInDate,
-      });
+        if (!response.ok) {
+            const result = await response.json().catch(() => ({}));
+            throw new Error(
+                result.message || "Không thể cập nhật trạng thái booking."
+            );
+        }
 
-      if (selectedBooking?.id === booking.id) {
-        await handleViewDetail(booking.id);
-      }
+        await fetchBookings({
+            keyword,
+            status: filters.status,
+            checkInDate: filters.checkInDate,
+        });
 
-      showSuccess(
-        `Booking đã được cập nhật sang trạng thái "${STATUS_LABELS[newStatus]}".`
-      );
+        if (selectedBooking?.id === booking.id) {
+            await handleViewDetail(booking.id);
+        }
+
+        showSuccess(
+            `Booking đã được cập nhật sang trạng thái "${STATUS_LABELS[newStatus]}".`
+        );
+
     } catch (err) {
-      showError(err.message || "Đã xảy ra lỗi khi cập nhật trạng thái.");
+        showError(err.message || "Đã xảy ra lỗi khi cập nhật trạng thái.");
     } finally {
-      setUpdatingStatus(false);
+        setUpdatingStatus(false);
     }
-  };
+};
+
 
   // ================= CONFIRM STATUS UPDATE =================
 
+ 
   const confirmStatusUpdate = async (booking, newStatus) => {
+    if (newStatus === "CANCELED") {
+        setSelectedCancelBooking(booking);
+        setCancelReason("");
+        setShowCancelModal(true);
+        return;
+    }
+
     const isConfirmed = await confirm({
-      title: "Xác nhận cập nhật trạng thái",
-      message: `Bạn có chắc chắn muốn chuyển booking này sang trạng thái "${STATUS_LABELS[newStatus]}" không?`,
-      confirmText: "Xác nhận",
-      cancelText: "Quay lại",
-      danger: newStatus === "CANCELED",
+        title: "Xác nhận cập nhật trạng thái",
+        message: `Bạn có chắc chắn muốn chuyển booking này sang trạng thái "${STATUS_LABELS[newStatus]}" không?`,
+        confirmText: "Xác nhận",
+        cancelText: "Quay lại",
     });
 
     if (!isConfirmed) return;
 
     await executeStatusUpdate(booking, newStatus);
-  };
+};
+
+const handleConfirmCancel = async () => {
+  const reason = cancelReason.trim();
+
+  if (!reason) {
+      showError("Vui lòng nhập lý do hủy booking.");
+      return;
+  }
+
+  await executeStatusUpdate(
+      selectedCancelBooking,
+      "CANCELED",
+      reason
+  );
+
+  setShowCancelModal(false);
+  setCancelReason("");
+  setSelectedCancelBooking(null);
+};
 
   // ================= ADD ROOM HANDLERS =================
 
@@ -2462,7 +2504,7 @@ function BookingManagement() {
       await confirmStatusUpdate(booking, newStatus);
     };
 
-    return (
+    return ( 
       <div className="booking-modal-backdrop" onClick={closeDetail}>
         <div
           className="booking-detail-modal booking-detail-modal-tabs"
@@ -2577,6 +2619,87 @@ function BookingManagement() {
                   return (
                     <>
                       {/* STATUS PANEL */}
+                      {showCancelModal && (
+    <div className="cancel-modal-overlay">
+        <div className="cancel-modal">
+
+            <div className="cancel-modal-header">
+                <div className="cancel-icon">
+                    <i className="bi bi-exclamation-triangle-fill"></i>
+                </div>
+
+                <h4>Xác nhận hủy đặt phòng</h4>
+
+                <p>
+                    Bạn đang thực hiện hủy booking{" "}
+                    <strong>
+                        {selectedCancelBooking?.bookingCode}
+                    </strong>
+                </p>
+            </div>
+
+            <div className="cancel-modal-body">
+                <label htmlFor="cancelReason">
+                    Lý do hủy đặt phòng
+                    <span className="required">*</span>
+                </label>
+
+                <textarea
+                    id="cancelReason"
+                    className="cancel-reason-input"
+                    placeholder="Nhập lý do hủy đặt phòng..."
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    rows={4}
+                    maxLength={500}
+                />
+
+                <div className="cancel-input-footer">
+                    <span>
+                        Vui lòng nhập lý do cụ thể để gửi thông báo đến khách hàng.
+                    </span>
+
+                    <span>{cancelReason.length}/500</span>
+                </div>
+            </div>
+
+            <div className="cancel-modal-footer">
+                <button
+                    type="button"
+                    className="btn-cancel-back"
+                    onClick={() => {
+                        setShowCancelModal(false);
+                        setCancelReason("");
+                        setSelectedCancelBooking(null);
+                    }}
+                    disabled={updatingStatus}
+                >
+                    Quay lại
+                </button>
+
+                <button
+                    type="button"
+                    className="btn-confirm-cancel"
+                    onClick={handleConfirmCancel}
+                    disabled={updatingStatus || !cancelReason.trim()}
+                >
+                    {updatingStatus ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm me-2"></span>
+                            Đang xử lý...
+                        </>
+                    ) : (
+                        <>
+                            <i className="bi bi-x-circle me-2"></i>
+                            Xác nhận hủy
+                        </>
+                    )}
+                </button>
+            </div>
+
+        </div>
+    </div>
+)}
 
                       <div className="booking-detail-section booking-status-panel">
                         <h4>Trạng thái booking</h4>
@@ -3609,7 +3732,7 @@ function BookingManagement() {
 
 <div className="invoice-header">
   <h1>GRANDSTAY</h1>
-  <p>HOTEL & RESORT</p>
+  <p>HOTEL</p>
   <h2>HÓA ĐƠN THANH TOÁN</h2>
   <span>BOOKING INVOICE</span>
 </div>

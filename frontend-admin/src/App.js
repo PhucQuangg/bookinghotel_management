@@ -1,20 +1,32 @@
-
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Script from "./components/Script";
 import AdminLayout from "./pages/AdminLayout";
+
 import Dashboard from "./pages/Dashboard";
 import BookingManagement from "./pages/BookingManagement";
+import CustomerManagement from "./pages/CustomerManagement.jsx";
+
 function App() {
     return (
         <BrowserRouter>
-        <Script />
+            <Script />
+
             <Routes>
-            <Route path="/admin" element={<AdminLayout />}>
-    <Route index element={<Dashboard />} />
-    <Route path="bookings" element={<BookingManagement />} />
-</Route>
-                
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Dashboard />} />
+
+                    <Route
+                        path="bookings"
+                        element={<BookingManagement />}
+                    />
+
+                    <Route
+                        path="customers"
+                        element={<CustomerManagement />}
+                    />
+                </Route>
             </Routes>
         </BrowserRouter>
     );

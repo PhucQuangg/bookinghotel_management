@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -519,6 +521,252 @@ public class EmailService {
                 </td>
             </tr>
             """.formatted(escapeHtml(remainingAmount));
+    }
+
+    @Async
+    public void sendBookingCancellationEmail(
+            String to,
+            String customerName,
+            String bookingCode,
+            String roomName,
+            String cancellationReason
+    ) {
+        if (to == null || to.isBlank()) {
+            log.warn("Không có email khách hàng để gửi thông báo hủy.");
+            return;
+        }
+
+        String name = escapeHtml(customerName);
+        String reason = escapeHtml(cancellationReason);
+        String code = escapeHtml(bookingCode);
+        String room = escapeHtml(roomName);
+
+        String html = """
+                <html>
+                <body style="margin:0;padding:25px;background:#f3f4f6;
+                    font-family:Arial,sans-serif;color:#263247;">
+                    <div style="max-width:600px;margin:auto;
+                        background:white;border-radius:10px;overflow:hidden;">
+
+                       <!-- HEADER -->
+                                  <div style="
+                                      background: linear-gradient(135deg, #dc2626, #991b1b);
+                                      padding: 35px 25px;
+                                      text-align: center;
+                                      color: #ffffff;
+                                  ">
+                                      <h1 style="
+                                          margin: 0;
+                                          font-size: 27px;
+                                          font-weight: 700;
+                                          line-height: 1.4;
+                                          color: #ffffff;
+                                      ">
+                                          Thông báo hủy đặt phòng
+                                      </h1>
+                                  
+                                      <p style="
+                                          margin: 8px 0 0;
+                                          font-size: 19px;
+                                          font-weight: 500;
+                                          color: #fee2e2;
+                                      ">
+                                          Booking Cancellation Notice
+                                      </p>
+                                  </div>
+
+                        <div style="padding:25px;">
+                            <p>Xin chào <strong>%s</strong>,</p>
+
+                            <p>
+                                Chúng tôi xin thông báo booking của bạn
+                                đã được hủy.
+                            </p>
+
+                            <h3 style="color:#7c3aed;">
+                                Thông tin đặt phòng
+                            </h3>
+
+                            <p><strong>Mã booking:</strong> %s</p>
+                            <p><strong>Loại phòng:</strong> %s</p>
+
+                            <div style="background:#f5f3ff;
+                                border-left:4px solid #8750ed;
+                                padding:15px;border-radius:5px;">
+                                <strong>Lý do hủy booking:</strong>
+                                <p style="margin-bottom:0;">%s</p>
+                            </div>
+
+                            <p style="margin-top:25px;">
+                                Nếu bạn cần hỗ trợ thêm, vui lòng liên hệ
+                                với khách sạn.
+                            </p>
+
+                            <p>
+                                Trân trọng,<br>
+                                <strong>GrandStay Hotel</strong>
+                            </p>
+                        </div>
+
+                        <div style="background:#f8fafc;padding:18px;
+                            text-align:center;color:#94a3b8;font-size:12px;">
+                            © 2026 GrandStay Hotel
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """.formatted(name, code, room, reason);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, false, "UTF-8");
+
+            helper.setTo(to.trim());
+            helper.setSubject(
+                    "GrandStay - Thông báo hủy booking #" + bookingCode
+            );
+            helper.setText(html, true);
+
+            mailSender.send(message);
+
+            log.info("Đã gửi email hủy booking {}", bookingCode);
+
+        } catch (Exception e) {
+            log.error("Lỗi gửi email hủy booking: {}", e.getMessage(), e);
+        }
+    }
+
+    @Async
+    public void sendBookingThankYouEmail(
+            String to,
+            String customerName,
+            String bookingCode,
+            String roomName,
+            LocalDate checkInDate,
+            LocalDate checkOutDate,
+            byte[] invoicePdf
+    ) {
+        try {
+            if (to == null || to.isBlank()) {
+                log.warn("Không thể gửi email cảm ơn vì email khách hàng trống.");
+                return;
+            }
+
+            MimeMessage message = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message, true, "UTF-8"
+            );
+
+            helper.setTo(to.trim());
+
+            helper.setSubject(
+                    "GRANDSTAY - Cảm ơn quý khách đã lựa chọn khách sạn"
+            );
+
+            String html = """
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;">
+                        <div style="max-width:600px;margin:30px auto;background:#ffffff;border-radius:12px;overflow:hidden;">
+
+                            <div style="background:linear-gradient(135deg,#7c3aed,#4c1d95);padding:35px 25px;text-align:center;color:#ffffff;">
+                                <h1 style="font-size:27px;margin:0;">
+                                    Cảm ơn quý khách!
+                                </h1>
+                                <p style="font-size:17px;margin:10px 0 0;">
+                                    Thank You for Staying with Us
+                                </p>
+                            </div>
+
+                            <div style="padding:30px;color:#334155;">
+                                <p>Xin chào <strong>%s</strong>,</p>
+
+                                <p>
+                                    GRANDSTAY Hotel chân thành cảm ơn quý khách
+                                    đã tin tưởng và lựa chọn dịch vụ của chúng tôi.
+                                </p>
+
+                                <p>
+                                    Hy vọng quý khách đã có một chuyến đi thật thoải mái
+                                    và những trải nghiệm đáng nhớ tại khách sạn.
+                                </p>
+
+                                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:25px 0;">
+                                    <h3 style="margin-top:0;color:#6d28d9;">
+                                        Thông tin lưu trú
+                                    </h3>
+
+                                    <p><strong>Mã đặt phòng:</strong> %s</p>
+                                    <p><strong>Loại phòng:</strong> %s</p>
+                                    <p><strong>Ngày nhận phòng:</strong> %s</p>
+                                    <p><strong>Ngày trả phòng:</strong> %s</p>
+                                </div>
+
+                                <p>
+                                    Hóa đơn thanh toán của quý khách được đính kèm
+                                    trong email này dưới dạng file PDF.
+                                    Quý khách vui lòng kiểm tra file đính kèm.
+                                </p>
+
+                                <p>
+                                    Chúng tôi rất mong được tiếp tục đồng hành và
+                                    phục vụ quý khách trong những chuyến đi sắp tới.
+                                </p>
+
+                                <p style="margin-top:25px;">
+                                    Trân trọng,<br/>
+                                    <strong>GRANDSTAY Hotel & Resort</strong>
+                                </p>
+                            </div>
+
+                            <div style="background:#f8fafc;text-align:center;padding:18px;color:#94a3b8;font-size:12px;">
+                                © GRANDSTAY Hotel & Resort. All rights reserved.
+                            </div>
+
+                        </div>
+                    </body>
+                    </html>
+                    """.formatted(
+                    escapeHtml(customerName),
+                    escapeHtml(bookingCode),
+                    escapeHtml(roomName),
+                    checkInDate != null ? checkInDate : "",
+                    checkOutDate != null ? checkOutDate : ""
+            );
+
+            helper.setText(html, true);
+
+            // Đính kèm hóa đơn PDF
+            if (invoicePdf != null && invoicePdf.length > 0) {
+                helper.addAttachment(
+                        "GRANDSTAY_HoaDon_" + bookingCode + ".pdf",
+                        new ByteArrayResource(invoicePdf),
+                        "application/pdf"
+                );
+
+                log.info("Đã đính kèm hóa đơn PDF cho booking {}", bookingCode);
+            } else {
+                log.warn("Không có dữ liệu PDF hóa đơn cho booking {}", bookingCode);
+            }
+
+            mailSender.send(message);
+
+            log.info(
+                    "Đã gửi email cảm ơn đến {} cho booking {}",
+                    to,
+                    bookingCode
+            );
+
+        } catch (Exception e) {
+            log.error(
+                    "Lỗi gửi email cảm ơn sau checkout: {}",
+                    e.getMessage(),
+                    e
+            );
+        }
     }
 
     /**

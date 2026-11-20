@@ -57,13 +57,17 @@ public class AdminBookingController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<Booking> updateBookingStatus(
             @PathVariable Long id,
-            @RequestParam String status
+            @RequestParam String status,
+            @RequestParam(required = false) String cancellationReason
     ) {
         return ResponseEntity.ok(
-                bookingService.updateBookingStatus(id, status)
+                bookingService.updateBookingStatus(
+                        id,
+                        status,
+                        cancellationReason
+                )
         );
     }
-
     /**
      * Lấy lịch sử thanh toán của booking.
      */

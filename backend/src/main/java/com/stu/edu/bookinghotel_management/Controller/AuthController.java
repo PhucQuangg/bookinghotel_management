@@ -1,66 +1,45 @@
+
 package com.stu.edu.bookinghotel_management.Controller;
 
-import com.stu.edu.bookinghotel_management.config.JwtUtil;
 import com.stu.edu.bookinghotel_management.dto.AuthRequestDTO;
 import com.stu.edu.bookinghotel_management.dto.RegisterCustomerDTO;
-import com.stu.edu.bookinghotel_management.entity.User;
 import com.stu.edu.bookinghotel_management.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
+    // =========================
+    // ĐĂNG NHẬP
+    // =========================
     @PostMapping("/login")
-    @ResponseBody
-    public Object login(@RequestBody AuthRequestDTO req) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
-            );
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(401).body("Sai tên đăng nhập hoặc mật khẩu!");
-        }
-
-        User user = userService.findByUsername(req.getUsername())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản!"));
-
-        String role = user.getRole().name();
-        String token = jwtUtil.generateToken(user.getUsername(), role);
-        String username = user.getUsername();
-        return Map.of(
-                "token", token,
-                "role", role,
-                "username",username
-        );
+    public ResponseEntity<Map<String, String>> login(
+            @RequestBody AuthRequestDTO req
+    ) {
+        return ResponseEntity.ok(userService.login(req));
     }
 
+    // =========================
+    // ĐĂNG KÝ
+    // =========================
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterCustomerDTO dto) {
-        try {
-            userService.register(dto);
-            return ResponseEntity.ok("Đăng ký tài khoản thành công! ");
+    public ResponseEntity<?> register(
+            @RequestBody RegisterCustomerDTO dto
+    ) {
+        userService.register(dto);
 
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(
+                "Đăng ký tài khoản thành công!"
+        );
     }
 }

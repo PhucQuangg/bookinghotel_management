@@ -13,6 +13,9 @@ import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
+    // =========================
+    // BOOKING CỦA KHÁCH HÀNG
+    // =========================
     List<Booking> findByCustomer_User_UsernameOrderByCreatedAtDesc(
             String username
     );
@@ -22,6 +25,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             String username
     );
 
+    // =========================
+    // QUẢN LÝ BOOKING ADMIN
+    // =========================
     List<Booking> findAllByOrderByCreatedAtDesc();
 
     @Query("""
@@ -44,5 +50,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("keyword") String keyword,
             @Param("status") BookingStatus status,
             @Param("checkInDate") LocalDate checkInDate
+    );
+
+    // =========================
+    // QUẢN LÝ KHÁCH HÀNG ADMIN
+    // =========================
+
+    // Đếm tổng số booking của khách hàng
+    long countByCustomer_Id(Integer customerId);
+
+    // Lấy lịch sử booking của khách hàng
+    List<Booking> findByCustomer_IdOrderByCreatedAtDesc(
+            Integer customerId
     );
 }

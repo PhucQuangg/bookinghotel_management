@@ -1,0 +1,13 @@
+
+_
+java:S1192#"IDefine a constant instead of duplicating this literal "success" 10 times.(—®óÈ
+c
+java:S1192$"HDefine a constant instead of duplicating this literal "message" 9 times.(¬èù¸ùÿÿÿÿ
+ÿ
+java:S1598"ãThis file "PaymentController.java" should be located in "com\stu\edu\bookinghotel_management\controller" directory, not in "E:\Java\hotelmanagement\backend\src\main\java\com\stu\edu\bookinghotel_management\Controller\customer".(ÍÍø øÿÿÿÿ
+;
+java:S1452"&Remove usage of generic wildcard type.(†¢ø4
+<
+java:S1452s"&Remove usage of generic wildcard type.(öß¬”
+=
+java:S1452“"&Remove usage of generic wildcard type.(«Þä™

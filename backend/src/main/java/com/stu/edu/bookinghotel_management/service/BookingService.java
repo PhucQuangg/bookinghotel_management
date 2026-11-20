@@ -4,11 +4,14 @@ package com.stu.edu.bookinghotel_management.service;
 import com.stu.edu.bookinghotel_management.dto.*;
 import com.stu.edu.bookinghotel_management.entity.*;
 import com.stu.edu.bookinghotel_management.repository.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -41,12 +44,17 @@ public class BookingService {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private InvoicePdfService invoicePdfService;
 
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
     @Autowired
     private BookingExtraCostRepository extraCostRepository;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(BookingService.class);
 
     @Transactional(readOnly = true)
     public List<BookingHistoryDTO> getMyBookings(String username) {
@@ -494,33 +502,168 @@ public class BookingService {
         );
     }
 
+
     /**
      * Cập nhật trạng thái booking dành cho Admin
      */
+
     @Transactional
-    public Booking updateBookingStatus(Long id, String newStatus) {
-
+    public Booking updateBookingStatus(
+            Long id,
+            String newStatus,
+            String cancellationReason
+    ) {
+        // 1. Tìm booking
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy booking"));
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy booking"));
 
-        if (newStatus == null || newStatus.trim().isEmpty()) {
+        // 2. Kiểm tra trạng thái đầu vào
+        if (newStatus == null || newStatus.isBlank()) {
             throw new RuntimeException("Trạng thái không được để trống");
         }
 
+        BookingStatus previousStatus = booking.getStatus();
+
+        BookingStatus status;
+
         try {
-            BookingStatus status = BookingStatus.valueOf(
+            status = BookingStatus.valueOf(
                     newStatus.trim().toUpperCase()
             );
-
-            // Admin được chuyển sang bất kỳ trạng thái hợp lệ nào
-            booking.setStatus(status);
-
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Trạng thái không hợp lệ: " + newStatus);
+            throw new RuntimeException(
+                    "Trạng thái không hợp lệ: " + newStatus
+            );
         }
 
-        return bookingRepository.save(booking);
+        // 3. Nếu hủy booking thì bắt buộc nhập lý do
+        if (status == BookingStatus.CANCELED) {
+            if (cancellationReason == null
+                    || cancellationReason.isBlank()) {
+                throw new RuntimeException(
+                        "Vui lòng nhập lý do hủy booking"
+                );
+            }
+        }
+
+        // 4. Cập nhật trạng thái booking
+        booking.setStatus(status);
+
+        Booking savedBooking = bookingRepository.save(booking);
+
+        // 5. Lấy thông tin khách hàng
+        String customerName = booking.getCustomer().getFullName();
+        String customerEmail = booking.getCustomer().getEmail();
+
+        String bookingCode = savedBooking.getBookingCode();
+
+        LocalDate checkInDate = savedBooking.getCheckInDate();
+        LocalDate checkOutDate = savedBooking.getCheckOutDate();
+
+        // 6. Lấy danh sách phòng thuộc booking
+        List<BookingRoom> bookingRooms =
+                bookingRoomRepository.findByBookingId(savedBooking.getId());
+
+        String roomName = "Phòng đã đặt";
+
+        if (bookingRooms != null && !bookingRooms.isEmpty()) {
+
+            Long roomId = bookingRooms.get(0).getRoomId();
+
+            roomName = roomRepository.findById(roomId)
+                    .map(room -> {
+                        if (room.getRoomType() != null) {
+                            return room.getRoomType().getName();
+                        }
+                        return "Phòng đã đặt";
+                    })
+                    .orElse("Phòng đã đặt");
+        }
+
+        String finalRoomName = roomName;
+
+        // 7. Xử lý khi booking chuyển sang COMPLETED
+        // Chỉ gửi email khi trạng thái thực sự chuyển sang COMPLETED.
+        if (status == BookingStatus.COMPLETED
+                && previousStatus != BookingStatus.COMPLETED) {
+
+            // Chỉ thực hiện sau khi transaction cập nhật thành công.
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+
+                        @Override
+                        public void afterCommit() {
+
+                            try {
+                                // Tạo hóa đơn PDF
+                                byte[] invoicePdf =
+                                        invoicePdfService.generateInvoicePdf(
+                                                savedBooking.getId()
+                                        );
+
+                                // Gửi email cảm ơn kèm hóa đơn PDF
+                                emailService.sendBookingThankYouEmail(
+                                        customerEmail,
+                                        customerName,
+                                        bookingCode,
+                                        finalRoomName,
+                                        checkInDate,
+                                        checkOutDate,
+                                        invoicePdf
+                                );
+
+                                log.info(
+                                        "Đã xử lý gửi email cảm ơn và hóa đơn booking {}",
+                                        bookingCode
+                                );
+
+                            } catch (Exception e) {
+                                log.error(
+                                        "Lỗi tạo hóa đơn hoặc gửi email booking {}: {}",
+                                        bookingCode,
+                                        e.getMessage(),
+                                        e
+                                );
+                            }
+                        }
+                    }
+            );
+        }
+
+        // 8. Xử lý khi booking chuyển sang CANCELED
+        if (status == BookingStatus.CANCELED
+                && previousStatus != BookingStatus.CANCELED) {
+
+            String reason = cancellationReason.trim();
+
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+
+                        @Override
+                        public void afterCommit() {
+
+                            emailService.sendBookingCancellationEmail(
+                                    customerEmail,
+                                    customerName,
+                                    bookingCode,
+                                    finalRoomName,
+                                    reason
+                            );
+
+                            log.info(
+                                    "Đã gửi email thông báo hủy booking {}",
+                                    bookingCode
+                            );
+                        }
+                    }
+            );
+        }
+
+        return savedBooking;
     }
+
+
 
 
     /**

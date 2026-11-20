@@ -24,87 +24,100 @@ export default function Login() {
         setError("");
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
+    
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-        if (!form.username.trim() || !form.password) {
-            setError("Vui lòng nhập đầy đủ thông tin.");
+    if (!form.username.trim() || !form.password) {
+        setError("Vui lòng nhập đầy đủ thông tin.");
+        return;
+    }
+
+    try {
+        setLoading(true);
+
+        const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: form.username.trim(),
+                password: form.password,
+            }),
+        });
+
+        // Đọc nội dung phản hồi từ Backend
+        const data = await response.json().catch(() => ({}));
+
+        // Xử lý lỗi đăng nhập
+        if (!response.ok) {
+            const errorMessage =
+                data.detail ||
+                data.message ||
+                data.error ||
+                (response.status === 403
+                    ? "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ khách sạn để được hỗ trợ."
+                    : response.status === 401
+                        ? "Tên đăng nhập hoặc mật khẩu không chính xác."
+                        : "Đã xảy ra lỗi. Vui lòng thử lại.");
+
+            throw new Error(errorMessage);
+        }
+
+        // Lấy thông tin đăng nhập
+        const token = data.token || data.accessToken;
+
+        const role = String(data.role || "")
+            .replace("ROLE_", "")
+            .toUpperCase();
+
+        if (!token) {
+            throw new Error(
+                "Đăng nhập thành công nhưng không nhận được token."
+            );
+        }
+
+        if (role !== "CUSTOMER" && role !== "ADMIN") {
+            throw new Error("Tài khoản không có quyền truy cập hợp lệ.");
+        }
+
+        // Đăng nhập khách hàng
+        if (role === "CUSTOMER") {
+            sessionStorage.setItem("token", token);
+            sessionStorage.setItem("role", role);
+            sessionStorage.setItem("username", data.username || form.username.trim());
+
+            window.location.href = "http://localhost:3000";
             return;
         }
 
-        try {
-            setLoading(true);
+        // Đăng nhập quản trị viên
+        if (role === "ADMIN") {
+            const username = data.username || form.username.trim();
 
-            const response = await fetch(`${API_URL}/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: form.username.trim(),
-                    password: form.password,
-                }),
-            });
+            // Truyền token và thông tin tài khoản sang trang Admin
+            const adminUrl = new URL("http://localhost:3001/admin/");
 
-            // Đọc dữ liệu phản hồi từ backend
-            const data = await response.json().catch(() => ({}));
+            adminUrl.searchParams.set("token", token);
+            adminUrl.searchParams.set("userName", username);
+            adminUrl.searchParams.set("role", role);
 
-            // Xử lý lỗi HTTP từ backend
-            if (!response.ok) {
-                throw new Error(
-                    data.message ||
-                    data.error ||
-                    "Tên đăng nhập hoặc mật khẩu không chính xác."
-                );
-            }
-
-            // Điều chỉnh tên field nếu response backend khác
-            const token = data.token || data.accessToken;
-            const role = String(data.role || "")
-                .replace("ROLE_", "")
-                .toUpperCase();
-
-            if (!token) {
-                setError(
-                    "Đăng nhập thành công nhưng không nhận được token."
-                );
-                return;
-            }
-
-            if (role !== "CUSTOMER" && role !== "ADMIN") {
-                setError("Tài khoản không có quyền truy cập hợp lệ.");
-                return;
-            }
-
-            // Lưu token và quyền người dùng
-            sessionStorage.setItem("token", token);
-            sessionStorage.setItem("role", role);
-            sessionStorage.setItem("username", form.username.trim());
-
-            if (data.role === "CUSTOMER") {
-        
-                window.location.href = "http://localhost:3000";
-              } else {
-        
-                window.location.href = `http://localhost:3001/admin/?token=${
-                  data.token
-                }&userName=${encodeURIComponent(form.username.trim())}&role=${data.role}`;
-
-                sessionStorage.removeItem("token", token);
-                sessionStorage.removeItem("role", role);
-                sessionStorage.removeItem("username", form.username.trim());
-    
-              }
-        } catch (err) {
-            setError(
-                err.message ||
-                "Không thể kết nối đến máy chủ. Vui lòng thử lại."
-            );
-        } finally {
-            setLoading(false);
+            window.location.href = adminUrl.toString();
+            return;
         }
-    };
+
+    } catch (err) {
+        setError(
+            err.message ||
+            "Không thể kết nối đến máy chủ. Vui lòng thử lại."
+        );
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     return (
         <div className="auth-page">

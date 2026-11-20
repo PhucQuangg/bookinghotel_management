@@ -1,0 +1,30 @@
+
+f
+java:S1192ú"PDefine a constant instead of duplicating this literal "Confirm Success" 4 times.( ŠÏ
+g
+java:S1192í"KDefine a constant instead of duplicating this literal "vnp_TxnRef" 3 times.(æÂ½”ùÿÿÿÿ
+i
+java:S1192Ÿ"RDefine a constant instead of duplicating this literal "vnp_TransactionNo" 3 times.(ÁÓ¹
+d
+java:S1192 "MDefine a constant instead of duplicating this literal "discountCode" 3 times.(ÍÛ¤®
+_
+java:S1192ì"HDefine a constant instead of duplicating this literal "success" 5 times.(á÷Ê
+d
+java:S1192í"HDefine a constant instead of duplicating this literal "pending" 5 times.(Ò‡–ùúÿÿÿÿ
+_
+java:S1192ò"HDefine a constant instead of duplicating this literal "message" 6 times.(×¨ Ê
+o	java:S135›"YReduce the total number of break and continue statements in this loop to use at most one.(ËÈ‰×
+R	java:S107Æ"<Method has 8 parameters, which is greater than 7 authorized.(”¹æ€
+h
+java:S3776E"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(”¹æ€
+i
+java:S3776Æ"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(”¹æ€
+n
+java:S3776‚"RRefactor this method to reduce its Cognitive Complexity from 22 to the 15 allowed.(ÜÍ•¾üÿÿÿÿ
+n
+java:S3776Ö"RRefactor this method to reduce its Cognitive Complexity from 22 to the 15 allowed.(“Òƒııÿÿÿÿ
+T	java:S106¢"9Replace this use of System.out or System.err by a logger.(„Ó±âûÿÿÿÿ
+W
+java:S1854”	";Remove this useless assignment to local variable "booking".(ƒù„»úÿÿÿÿ
+H
+java:S1481”	",Remove this unused "booking" local variable.(ƒù„»úÿÿÿÿ
